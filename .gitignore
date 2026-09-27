@@ -1,0 +1,29 @@
+# Dependencias
+node_modules/
+
+# Variables de entorno
+.env
+.env.local
+.env.*.local
+
+
+logs/
+*.log
+npm-debug.log*
+
+
+.DS_Store
+Thumbs.db
+
+
+.vscode/*
+!.vscode/extensions.json
+.idea/
+
+
+dist/
+build/
+coverage/
+
+
+*.postman_environment.json
