@@ -1,79 +1,54 @@
 import { constructorError } from "../utils/contructor.error.js";
 import { generarAccessTokenByUser } from "../utils/token.util.js";
 import { compararPassword, hashear } from "../utils/validar-password.js";
-import User from "../models/user.model.js";
-import { getUserByEmail, getUserByUsername } from "./user.services.js";
+import Usuario from "../models/usuario.model.js";
+import {
+    getUsuarioByEmailOrUsernameService,
+    getUsuarioByEmailService,
+    getUsuarioByUsernameService
+} from "./usuario.service.js";
+import { Role } from "../constants/role.constants.js";
+import { Plan } from "../constants/plan.constants.js";
 
-
-export const getUserByEmailOrUsername = async (data) => {
-    return await User.findOne({
-        $or: [
-            { email: data },
-            { username: data }
-        ]
-    }).select("+password");
-}
-
-//data es un usuario completo
 export const createUserService = async (data) => {
-    //hay que validar que no existe un usuario con email ni username
+    const { username, email, password } = data;
 
+    const usuarioPorEmail = await getUsuarioByEmailService(email);
+    if (usuarioPorEmail) {
+        throw constructorError("El email ya está en uso", 409);
+    }
+    const usuarioPorUsername = await getUsuarioByUsernameService(username);
+    if (usuarioPorUsername) {
+        throw constructorError("El username ya está en uso", 409);
+    }
 
-    const email = data.email;
-    const userPorEmail = await getUserByEmail(email);
-    if (userPorEmail) {
-        //TODO usar el constructor de errores
-        throw new Error("Error el usuario ya existe");
-    }
-    const username = data.username;
-    const userPorUsername = await getUserByUsername(username);
-    if (userPorUsername) {
-        //TODO usar el constructor de errores
-        throw new Error("Error el usuario ya existe");
-    }
-    //generar pasword encriptado
-    const password = data.password;
     const hashPassword = await hashear(password);
-    data.password = hashPassword;
-    //guardamos y retornamos el usuario
-    const user = await User.create(data);
-    return user;
-}
 
-export const generarTokenAuthService = (user) => {
-    return generarAccessTokenByUser(user);
-}
+    const usuario = await Usuario.create({
+        username,
+        email,
+        password: hashPassword,
+        role: Role.user,
+        plan: Plan.plus
+    });
 
+    return usuario;
+};
+
+export const generarTokenAuthService = (usuario) => {
+    return generarAccessTokenByUser(usuario);
+};
 
 export const loginService = async (reqBody) => {
+    const errorCredencialInvalida = constructorError("Credenciales inválidas", 401);
 
-    const errorCredencialInvalida = constructorError("Credenciales invalidas", 401);
+    if (!reqBody) throw errorCredencialInvalida;
 
-    if (!reqBody) {
-        throw errorCredencialInvalida;
-    }
-    const emailOUsername = reqBody.identificador;
+    const usuario = await getUsuarioByEmailOrUsernameService(reqBody.identificador);
+    if (!usuario) throw errorCredencialInvalida;
 
-    //valida que exita usuario en la base, obtener el usuario por el email
-    const user = await getUserByEmailOrUsername(emailOUsername);
+    const valid = await compararPassword(reqBody.password, usuario.password);
+    if (!valid) throw errorCredencialInvalida;
 
-    //si no existe error
-    if (!user) {
-        throw errorCredencialInvalida;
-    }
-    //si existe
-    const passwordParam = reqBody.password;
-    const passwordBase = user.password;
-
-    //validar password pasado por data con el password del usuario recuperado
-    const valid = await compararPassword(passwordParam, passwordBase);
-
-    //si no valida error
-    if (!valid) {
-        throw errorCredencialInvalida;
-    }
-    return user;
-}
-
-
-
+    return usuario;
+};

@@ -1,7 +1,4 @@
-
-
 import bcrypt from "bcryptjs";
-
 
 const salt = 12;
 
@@ -10,8 +7,7 @@ export const hashear = async (password) => {
     return hash;
 }
 
-
 export const compararPassword = async (password, hash) => {
     const isValid = await bcrypt.compare(password, hash);
     return isValid;
-}       
+}

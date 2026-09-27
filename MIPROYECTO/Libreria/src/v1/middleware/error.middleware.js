@@ -8,7 +8,6 @@ export const middlewareErrores = (err, req, res, next) => {
             }))
         });
     }
-    // Errores de Mongo/Mongoose que provienen de datos de entrada.
     if (err.name === "ValidationError" || err.name === "CastError") {
         return res.status(400).json({ message: err.message });
     }
@@ -17,4 +16,3 @@ export const middlewareErrores = (err, req, res, next) => {
         message: status >= 500 ? 'Error interno del servidor' : (err.publicMessage || err.message)
     });
 };
-

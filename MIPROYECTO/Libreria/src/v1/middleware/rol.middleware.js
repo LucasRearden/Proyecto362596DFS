@@ -1,18 +1,14 @@
 import { Role } from "../constants/role.constants.js";
 import { constructorError } from "../utils/contructor.error.js";
 
-const validateRolMiddleware = (role) => {
+const validarRolMiddleware = (rolRequerido) => {
     return (req, res, next) => {
         const usuario = req.user;
-        const rolUsuario = usuario.role;
-
-        if (role !== rolUsuario) {
-            const errorSinRol = constructorError("No tiene permisos suficientes", 403)
-            next(errorSinRol);
+        if (usuario.role !== rolRequerido) {
+            return next(constructorError("No tiene permisos suficientes", 403));
         }
-        next();
-    }
-}
+        return next();
+    };
+};
 
-
-export const validarRolAdminMiddleware = validateRolMiddleware(Role.admin);
+export const validarRolAdminMiddleware = validarRolMiddleware(Role.admin);

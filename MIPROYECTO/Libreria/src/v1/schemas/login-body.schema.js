@@ -6,5 +6,4 @@ export const loginBodySchema = Joi.object({
         Joi.string().email(),
         Joi.string().alphanum().min(3)
     ).required(),
-})
-
+});

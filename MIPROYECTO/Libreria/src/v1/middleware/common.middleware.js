@@ -1,7 +1,4 @@
-import { paramsIdTareaSchema } from "../schemas/common.schema.js";
+import { paramsIdLibroSchema } from "../schemas/common.schema.js";
 import { velidateRequest } from "./validate.middleware.js";
 
-
-
-export const validateParamsIdTareaMiddleware = velidateRequest(paramsIdTareaSchema, "params");
-
+export const validateParamsIdLibroMiddleware = velidateRequest(paramsIdLibroSchema, "params");
