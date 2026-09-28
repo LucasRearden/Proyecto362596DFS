@@ -1,0 +1,49 @@
+$kind: http-request
+url: "{{base_url}}/auth/register"
+method: POST
+body:
+  type: json
+  content: |-
+    {
+        "name": "{{$randomUserName}}",
+        "username": "{{username}}",
+        "email": "{{$randomEmail}}",
+        "password": "miclave",
+        "confirmPassword": "miclave",
+        "role":"admin"
+    }
+scripts:
+  - type: afterResponse
+    code: |
+      
+      const requestBody = JSON.parse(pm.request.body.raw);
+
+      const responseBody = pm.response.json();
+       
+
+       pm.test("La respuesta contiene un token", () => {
+          pm.expect(responseBody).to.have.property("token");
+          pm.expect(responseBody.token).to.be.a("string");
+      });
+
+      const response = pm.response.json();
+      pm.collectionVariables.set("access_token", response.token);
+       
+      pm.collectionVariables.set(
+          "loginUsername",
+          responseBody.user.username
+      );
+
+      pm.collectionVariables.set(
+          "loginPassword",
+          requestBody.password
+      );
+    language: text/javascript
+  - type: beforeRequest
+    code: |+
+      const numero = Math.floor(Math.random() * 100000);
+      const username = `usuario${numero}`;
+      pm.collectionVariables.set("username", username);
+
+    language: text/javascript
+order: 1000

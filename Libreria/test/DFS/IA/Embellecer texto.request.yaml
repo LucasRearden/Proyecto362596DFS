@@ -1,0 +1,10 @@
+$kind: http-request
+url: "{{base_url}}/public/embellecer"
+method: POST
+body:
+  type: json
+  content: |-
+    {
+        "texto":"relacionado a montevideo"
+    }
+order: 1000

@@ -1,0 +1,15 @@
+$kind: http-request
+url: "{{dev_base_url}}/tareas/{{tareaId}}"
+method: PUT
+body:
+  type: json
+  content: |2-
+        {  
+            "title": "{{$randomLoremSentence}}",
+            "completed": {{$randomBoolean}}
+        }
+auth:
+  type: bearer
+  credentials:
+    token: "{{access_token}}"
+order: 6000

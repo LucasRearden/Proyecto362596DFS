@@ -1,0 +1,13 @@
+$kind: collection
+description: ""
+variables:
+  access_token: naada
+  token_type: ""
+  expires_in: ""
+  loginUsername: ""
+  loginPassword: ""
+  username: ""
+  tareaId: ""
+  dev_base_url: ""
+  prod_base_url: ""
+  base_url: ""

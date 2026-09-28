@@ -1,0 +1,14 @@
+$kind: http-request
+url: "{{dev_base_url}}/tareas/{{tareaId}}"
+method: PATCH
+body:
+  type: json
+  content: |2-
+        {           
+            "title": "{{$randomLoremSentence}}" 
+        }
+auth:
+  type: bearer
+  credentials:
+    token: "{{access_token}}"
+order: 5000

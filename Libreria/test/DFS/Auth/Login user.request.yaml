@@ -1,0 +1,23 @@
+$kind: http-request
+url: "{{base_url}}/auth/login"
+method: POST
+body:
+  type: json
+  content: |-
+    {
+        "identificador": "{{loginUsername}}",
+        "password": "{{loginPassword}}"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      const responseBody = pm.response.json();
+
+       pm.test("La respuesta contiene un token", () => {
+          pm.expect(responseBody).to.have.property("token");
+          pm.expect(responseBody.token).to.be.a("string");
+      });
+
+      pm.collectionVariables.set("access_token", responseBody.token);
+    language: text/javascript
+order: 2000
